@@ -4,7 +4,7 @@ from base64 import urlsafe_b64encode
 import os
 from cryptography.fernet import Fernet
 import yaml
-from typing import Dict
+from typing import Dict, Optional
 
 class PasswordManager:
     def __init__(self, file_path: str):
@@ -38,7 +38,7 @@ class PasswordManager:
             yaml.dump(data, file)
     
     def authenticate(self) -> bool:
-        password = getpass.getpass("Geben Sie bitte Ihr Passwort ein: ")
+        password = getpass.getpass("Geben Sie bitte das Masterpasswort ein: ")
         hashed_password = hashlib.sha256(password.encode()).hexdigest()
 
         with open(self.file_path, "r") as file:
@@ -54,7 +54,7 @@ class PasswordManager:
         return yaml.safe_load(decrypted_data)
     
     def save_passwords(self, passwords: Dict[str, str]) -> None:
-        encrypted_data = Fernet (self.key).encrypt(yaml.dump(passwords))
+        encrypted_data = Fernet (self.key).encrypt(yaml.dump(passwords).encode())
 
         with open(self.file_path, "r") as file:
             data = yaml.safe_load(file)
@@ -75,6 +75,17 @@ class PasswordManager:
         self.save_passwords(passwords)
         print(f"Passwort für {identifier} erolgreich hinzugefügt!")
         
-    
+    def get_password(self, identifier: str) -> Optional[str]:
+        if not self.authenticate():
+            print("Authentifizierung fehlgeschlagen")
+            return
+        
+        passwords = self.load_passwords()
+        if identifier in passwords:
+            password = passwords[identifier]
+            return print(f"Das Passwort lautet {password}")
+        print(f"Kein Passwort für {identifier} gefunden")
+        return None
+
+
 manager = PasswordManager("passwords.yaml")
-manager.add_password("website1", "test")
