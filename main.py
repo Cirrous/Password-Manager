@@ -88,4 +88,32 @@ class PasswordManager:
         return None
 
 
-manager = PasswordManager("passwords.yaml")
+def main_menu():
+    manager = PasswordManager("passwords.yaml")
+    
+    while True:
+        print("\nPasswortmanager Menü")
+        print("1. Passwort hinzufügen")
+        print("2. Passwort abrufen")
+        print("3. Beenden")
+        
+        choice = input("Bitte wählen Sie eine Option (1-3): ")
+
+        if choice == "1":
+            identifier = input("Geben Sie die Kennung (z.B. Website oder Dienst) ein: ")
+            password = getpass.getpass("Geben Sie das Passwort ein: ")
+            manager.add_password(identifier, password)
+
+        elif choice == "2":
+            identifier = input("Geben Sie die Kennung (z.B. Website oder Dienst) ein: ")
+            manager.get_password(identifier)
+
+        elif choice == "3":
+            print("Beende das Programm...")
+            break
+
+        else:
+            print("Ungültige Auswahl, bitte erneut versuchen.")
+
+if __name__ == "__main__":
+    main_menu()
