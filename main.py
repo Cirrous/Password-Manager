@@ -35,6 +35,13 @@ class PasswordManager:
         with open(self.file_path, "w") as file: 
             data = {"auth_data": hashed_password, "passwords": encrypted_data}
             yaml.dump(data, file)
+    
+    def authenticate(self) -> bool:
+        password = getpass.getpass("Geben Sie bitte Ihr Passwort ein: ")
+        hashed_password = hashlib.sha256(password.encode()).hexdigest()
 
+        with open(self.file_path, "r") as file:
+            data = yaml.safe_load(file)
+            return data["auth_data"] == hashed_password
     
 manager = PasswordManager("passwords.yaml")
